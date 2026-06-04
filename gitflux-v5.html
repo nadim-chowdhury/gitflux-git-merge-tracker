@@ -16,6 +16,10 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <style>
       :root {
         --bg: #f5f4f1;
@@ -131,8 +135,8 @@
         align-items: center;
         justify-content: center;
         font-family: "DM Mono", monospace;
-        font-size: 11px;
-        color: var(--bg2);
+        font-size: 19px;
+        color: var(--bg);
         font-weight: 500;
         letter-spacing: -0.5px;
         flex-shrink: 0;
@@ -172,7 +176,7 @@
       .nav-btn.active {
         background: var(--surface3);
         color: var(--text);
-        font-weight: 600;
+        /* font-weight: 600; */
       }
 
       .hdr-right {
@@ -1088,8 +1092,8 @@
 
       .table-head {
         display: grid;
-        grid-template-columns: 115px 130px 142px 85px 1fr 115px 72px;
-        gap: 6px;
+        grid-template-columns: 110px 180px 140px 160px 85px 85px 1fr 90px 72px;
+        gap: 10px;
         padding: 8px 14px;
         background: var(--surface);
         border-bottom: 1px solid var(--border);
@@ -1106,8 +1110,8 @@
 
       .table-row {
         display: grid;
-        grid-template-columns: 115px 130px 142px 85px 1fr 115px 72px;
-        gap: 6px;
+        grid-template-columns: 110px 180px 140px 160px 85px 85px 1fr 90px 72px;
+        gap: 10px;
         padding: 9px 14px;
         border-bottom: 1px solid var(--border);
         align-items: center;
@@ -1129,6 +1133,42 @@
 
       .table-row:last-child {
         border-bottom: none;
+      }
+
+      .sb-opened {
+        background: var(--green-lt);
+        color: var(--green);
+      }
+
+      .sb-merged {
+        background: rgba(126, 34, 206, 0.1);
+        color: #7e22ce;
+      }
+
+      .sb-closed {
+        background: var(--red-lt);
+        color: var(--red);
+      }
+
+      .sb-locked {
+        background: var(--surface3);
+        color: var(--text3);
+      }
+
+      .cell-author {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11.5px;
+        color: var(--text2);
+        padding-right: 10px;
+      }
+
+      .cell-author img {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--surface3);
       }
 
       .table-row:hover {
@@ -1160,14 +1200,16 @@
         white-space: normal;
         overflow-wrap: break-word;
         word-break: break-word;
+        padding-right: 10px;
       }
 
       .cell-msg {
         font-size: 11.5px;
         color: var(--text2);
-        overflow: hidden;
+        /* overflow: hidden;
         text-overflow: ellipsis;
-        white-space: nowrap;
+        white-space: nowrap; */
+        padding-right: 10px;
       }
 
       .cell-actions {
@@ -3070,6 +3112,163 @@
         text-align: right;
         color: var(--text3);
       }
+
+      .footer {
+        /* display: none; */
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        padding: 14px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+        gap: 16px;
+        border-radius: var(--r);
+      }
+
+      .footer-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .footer-name {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text);
+        letter-spacing: -0.2px;
+      }
+
+      .footer-copy {
+        font-size: 10.5px;
+        color: var(--text3);
+        font-family: "DM Mono", monospace;
+      }
+
+      .footer-sep {
+        width: 1px;
+        height: 12px;
+        background: var(--border);
+        margin: 0 2px;
+        flex-shrink: 0;
+      }
+
+      .footer-social {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .footer-social-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 6px;
+        color: var(--text3);
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+        position: relative;
+      }
+
+      .footer-social-link:hover {
+        /* transform: translateY(-2px); */
+        border-color: var(--border);
+        box-shadow: var(--shadow);
+      }
+
+      .footer-social-link.gh:hover {
+        color: var(--gh);
+        background: var(--surface2);
+      }
+
+      .footer-social-link.li:hover {
+        color: #0a66c2;
+        background: rgba(10, 102, 194, 0.08);
+      }
+
+      .footer-social-link.web:hover {
+        color: var(--accent);
+        background: var(--accent-lt);
+      }
+
+      .footer-social-link.fb:hover {
+        color: #1877f2;
+        background: rgba(24, 119, 242, 0.08);
+      }
+
+      .footer-social-link.tw:hover {
+        color: var(--text);
+        background: var(--surface2);
+      }
+
+      .footer-social-link.ig:hover {
+        color: #e4405f;
+        background: rgba(228, 64, 95, 0.08);
+      }
+
+      .footer-social-link.yt:hover {
+        color: #ff0000;
+        background: rgba(255, 0, 0, 0.06);
+      }
+
+      .footer-social-link[title]:hover::after {
+        content: attr(title);
+        position: absolute;
+        bottom: 130%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--text);
+        color: var(--bg2);
+        font-size: 9px;
+        padding: 3px 8px;
+        border-radius: 4px;
+        white-space: nowrap;
+        z-index: 99;
+        font-family: "DM Mono", monospace;
+        pointer-events: none;
+      }
+
+      /* Commit History & Journey Styles */
+      .journey-wrap {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        flex-wrap: wrap;
+      }
+
+      .journey-node {
+        padding: 2px 7px;
+        border-radius: 4px;
+        background: var(--surface2);
+        color: var(--text3);
+        font-family: "DM Mono", monospace;
+        font-size: 10px;
+        border: 1px solid var(--border);
+      }
+
+      .journey-node.active {
+        background: var(--accent-lt);
+        color: var(--accent);
+        border-color: rgba(37, 99, 235, 0.2);
+        font-weight: 600;
+      }
+
+      .journey-arrow {
+        color: var(--text3);
+        font-size: 10px;
+      }
+
+      .mt-sr-highlight {
+        background: #fef3c7;
+        color: #92400e;
+        font-weight: 600;
+        padding: 0 2px;
+        border-radius: 2px;
+      }
     </style>
   </head>
 
@@ -3079,10 +3278,11 @@
       DEMO MODE — Showing sample data for UI preview. Click "Demo" button to
       return to your real data.
     </div>
+
     <div class="shell" style="grid-template-rows: 52px 1fr auto">
       <header>
         <a class="logo" href="#">
-          <div class="logo-mark">GF</div>
+          <div class="logo-mark"><i class="fa-brands fa-git-alt"></i></div>
           GitFlux <span class="logo-v">v5</span>
         </a>
 
@@ -3095,6 +3295,9 @@
           </button>
           <button class="nav-btn" onclick="switchView('log', this)">
             Activity Log
+          </button>
+          <button class="nav-btn" onclick="switchView('history', this)">
+            Commit History
           </button>
           <button class="nav-btn" onclick="switchView('traceability', this)">
             Traceability
@@ -3209,15 +3412,34 @@
                     placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
                   />
                   <button class="tin-eye" onclick="togglePwd('gh-token', this)">
-                    👁
+                    <i class="fa-solid fa-eye"></i>
                   </button>
                 </div>
                 <button class="btn-connect" onclick="connectGitHub()">
                   Connect GitHub
                 </button>
                 <div class="src-hint">
-                  Generate at GitHub → Settings → Developer settings → Personal
-                  access tokens → Fine-grained<br /><strong>Needs:</strong>
+                  Generate at GitHub
+                  <i
+                    class="fa-solid fa-chevron-right"
+                    style="font-size: 8px"
+                  ></i>
+                  Settings
+                  <i
+                    class="fa-solid fa-chevron-right"
+                    style="font-size: 8px"
+                  ></i>
+                  Developer settings
+                  <i
+                    class="fa-solid fa-chevron-right"
+                    style="font-size: 8px"
+                  ></i>
+                  Personal access tokens
+                  <i
+                    class="fa-solid fa-chevron-right"
+                    style="font-size: 8px"
+                  ></i>
+                  Fine-grained<br /><strong>Needs:</strong>
                   repo, read:user
                 </div>
               </div>
@@ -3266,16 +3488,24 @@
                     placeholder="glpat-xxxxxxxxxxxxxxxxxxxx"
                   />
                   <button class="tin-eye" onclick="togglePwd('gl-token', this)">
-                    👁
+                    <i class="fa-solid fa-eye"></i>
                   </button>
                 </div>
                 <button class="btn-connect" onclick="connectGitLab()">
                   Connect GitLab
                 </button>
                 <div class="src-hint">
-                  Generate at GitLab → Preferences → Access Tokens<br /><strong
-                    >Scopes:</strong
-                  >
+                  Generate at GitLab
+                  <i
+                    class="fa-solid fa-chevron-right"
+                    style="font-size: 8px"
+                  ></i>
+                  Preferences
+                  <i
+                    class="fa-solid fa-chevron-right"
+                    style="font-size: 8px"
+                  ></i>
+                  Access Tokens<br /><strong>Scopes:</strong>
                   read_api, read_user, read_repository
                 </div>
               </div>
@@ -3520,11 +3750,13 @@
           >
             <div class="toolbar">
               <div class="search-wrap">
-                <span class="search-ico">⌕</span>
+                <span class="search-ico"
+                  ><i class="fa-solid fa-magnifying-glass"></i
+                ></span>
                 <input
                   class="search-in"
                   id="search-q"
-                  placeholder="Search projects, branches, commits… (⌘K)"
+                  placeholder="Search projects, branches, commits…"
                   oninput="applyFilters()"
                 />
               </div>
@@ -3533,31 +3765,39 @@
                   class="vt-btn active"
                   onclick="switchTableView('table', this)"
                 >
-                  Table
+                  <i class="fa-solid fa-table-list"></i> Table
                 </button>
                 <button
                   class="vt-btn"
                   onclick="switchTableView('timeline', this)"
                 >
-                  Timeline
+                  <i class="fa-solid fa-timeline"></i> Timeline
                 </button>
               </div>
               <div class="toolbar-right">
-                <button class="btn-sm" onclick="exportMD()">↓ MD</button>
-                <button class="btn-sm" onclick="exportJSON()">↓ JSON</button>
-                <button class="btn-sm" onclick="exportCSV()">↓ CSV</button>
+                <button class="btn-sm" onclick="exportMD()">
+                  <i class="fa-solid fa-file-lines"></i> MD
+                </button>
+                <button class="btn-sm" onclick="exportJSON()">
+                  <i class="fa-solid fa-file-code"></i> JSON
+                </button>
+                <button class="btn-sm" onclick="exportCSV()">
+                  <i class="fa-solid fa-file-csv"></i> CSV
+                </button>
               </div>
             </div>
 
             <div id="view-table" class="table-wrap">
               <div class="table-head">
-                <span>Time</span><span>Project</span><span>Branch</span>
-                <span>Type</span><span>Message</span><span>Env / Server</span
-                ><span></span>
+                <span>Time</span><span>Project</span><span>Author</span
+                ><span>Branch</span> <span>Type</span><span>State</span
+                ><span>Message</span><span>Env / Server</span><span></span>
               </div>
               <div class="table-body" id="table-body">
                 <div class="empty">
-                  <div class="empty-ico">⎇</div>
+                  <div class="empty-ico">
+                    <i class="fa-solid fa-code-branch"></i>
+                  </div>
                   <div class="empty-title">No events yet</div>
                   <div class="empty-sub">
                     Connect GitHub or GitLab, or add entries manually.
@@ -3565,17 +3805,56 @@
                 </div>
               </div>
             </div>
+          </div>
 
-            <div id="view-timeline" style="display: none">
-              <div class="tl-wrap" id="timeline-body"></div>
+          <!-- COMMIT HISTORY VIEW -->
+          <div
+            id="view-history"
+            style="display: none; flex-direction: column; gap: 16px"
+          >
+            <div class="toolbar">
+              <div class="search-wrap">
+                <span class="search-ico"
+                  ><i class="fa-solid fa-magnifying-glass"></i
+                ></span>
+                <input
+                  class="search-in"
+                  id="history-search-q"
+                  placeholder="Search commits, authors, projects..."
+                  oninput="renderCommitHistory()"
+                />
+              </div>
+              <div class="toolbar-right" style="color: var(--text2)">
+                <span class="badge-count" id="history-count">0</span>
+                Commits
+              </div>
             </div>
+
+            <div class="table-wrap">
+              <div
+                class="table-head"
+                style="grid-template-columns: 100px 220px 180px 1fr 180px 80px"
+              >
+                <span>Time</span><span>Project</span><span>Author</span
+                ><span>Message</span><span>Merge Journey</span
+                ><span>Actions</span>
+              </div>
+              <div class="table-body" id="history-body">
+                <!-- JS will render rows here -->
+              </div>
+            </div>
+          </div>
+          <div id="view-timeline" style="display: none">
+            <div class="tl-wrap" id="timeline-body"></div>
           </div>
 
           <!-- REPOS -->
           <div id="view-repos" style="display: none">
             <div id="repos-grid" class="repos-grid">
               <div class="empty">
-                <div class="empty-ico">📁</div>
+                <div class="empty-ico">
+                  <i class="fa-solid fa-folder-open"></i>
+                </div>
                 <div class="empty-title">No repos connected</div>
                 <div class="empty-sub">
                   Connect GitHub or GitLab to see your repositories.
@@ -3591,7 +3870,9 @@
           >
             <div class="mt-search-wrap" style="margin-bottom: 0">
               <div class="mt-search-input-wrap">
-                <span class="search-ico">⌕</span>
+                <span class="search-ico"
+                  ><i class="fa-solid fa-magnifying-glass"></i
+                ></span>
                 <input
                   class="mt-search-in"
                   id="trace-search-q"
@@ -3617,7 +3898,9 @@
 
             <div id="trace-empty" class="mt-sr-card">
               <div class="mt-sr-empty">
-                <div class="mt-sr-empty-ico">🔍</div>
+                <div class="mt-sr-empty-ico">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
                 <div class="mt-sr-empty-title">Ready to Trace</div>
                 <div class="mt-sr-empty-sub">
                   Enter a commit hash or branch name to visualize its path to
@@ -3635,7 +3918,9 @@
             <!-- Merge Tracker Search -->
             <div class="mt-search-wrap">
               <div class="mt-search-input-wrap">
-                <span class="search-ico">⌕</span>
+                <span class="search-ico"
+                  ><i class="fa-solid fa-magnifying-glass"></i
+                ></span>
                 <input
                   class="mt-search-in"
                   id="mt-search-q"
@@ -3667,7 +3952,7 @@
                 onclick="exportMergeReport()"
                 title="Export merge report"
               >
-                Export Report
+                <i class="fa-solid fa-file-export"></i> Export Report
               </button>
             </div>
 
@@ -4479,127 +4764,6 @@
       </div>
     </div>
 
-    <style>
-      .footer {
-        /* display: none; */
-        background: var(--bg2);
-        border: 1px solid var(--border);
-        padding: 14px 24px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-shrink: 0;
-        gap: 16px;
-        border-radius: var(--r);
-      }
-
-      .footer-left {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .footer-name {
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--text);
-        letter-spacing: -0.2px;
-      }
-
-      .footer-copy {
-        font-size: 10.5px;
-        color: var(--text3);
-        font-family: "DM Mono", monospace;
-      }
-
-      .footer-sep {
-        width: 1px;
-        height: 12px;
-        background: var(--border);
-        margin: 0 2px;
-        flex-shrink: 0;
-      }
-
-      .footer-social {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-      }
-
-      .footer-social-link {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 30px;
-        height: 30px;
-        border-radius: 6px;
-        color: var(--text3);
-        text-decoration: none;
-        font-size: 14px;
-        transition: all 0.2s ease;
-        border: 1px solid transparent;
-        position: relative;
-      }
-
-      .footer-social-link:hover {
-        /* transform: translateY(-2px); */
-        border-color: var(--border);
-        box-shadow: var(--shadow);
-      }
-
-      .footer-social-link.gh:hover {
-        color: var(--gh);
-        background: var(--surface2);
-      }
-
-      .footer-social-link.li:hover {
-        color: #0a66c2;
-        background: rgba(10, 102, 194, 0.08);
-      }
-
-      .footer-social-link.web:hover {
-        color: var(--accent);
-        background: var(--accent-lt);
-      }
-
-      .footer-social-link.fb:hover {
-        color: #1877f2;
-        background: rgba(24, 119, 242, 0.08);
-      }
-
-      .footer-social-link.tw:hover {
-        color: var(--text);
-        background: var(--surface2);
-      }
-
-      .footer-social-link.ig:hover {
-        color: #e4405f;
-        background: rgba(228, 64, 95, 0.08);
-      }
-
-      .footer-social-link.yt:hover {
-        color: #ff0000;
-        background: rgba(255, 0, 0, 0.06);
-      }
-
-      .footer-social-link[title]:hover::after {
-        content: attr(title);
-        position: absolute;
-        bottom: 130%;
-        left: 50%;
-        transform: translateX(-50%);
-        background: var(--text);
-        color: var(--bg2);
-        font-size: 9px;
-        padding: 3px 8px;
-        border-radius: 4px;
-        white-space: nowrap;
-        z-index: 99;
-        font-family: "DM Mono", monospace;
-        pointer-events: none;
-      }
-    </style>
-
     <script>
       // ═══════════════════════════════════════════
       //  CRYPTO — AES-GCM 256-bit
@@ -4698,8 +4862,8 @@
       //  AUTO-REFRESH (1 hour)
       // ═══════════════════════════════════════════
       let refreshTimer = null,
-        refreshRemaining = 3600;
-      let REFRESH_INTERVAL = 3600;
+        refreshRemaining = 599;
+      let REFRESH_INTERVAL = 599;
 
       function startAutoRefresh() {
         stopAutoRefresh();
@@ -4985,6 +5149,8 @@
                   merge_target: mr.target_branch,
                   message: mr.title,
                   author: mr.author?.username || "—",
+                  author_name: mr.author?.name || "",
+                  author_avatar: mr.author?.avatar_url || "",
                   timestamp: mr.merged_at || mr.created_at,
                   environment:
                     mr.target_branch === "main" || mr.target_branch === "master"
@@ -5121,6 +5287,7 @@
         updateProjectsDL();
         renderMergeTracker();
         renderAnalytics();
+        renderCommitHistory();
       }
 
       // ═══════════════════════════════════════════
@@ -5408,16 +5575,26 @@
       }
 
       function jumpToTrace(q) {
-        switchView("traceability", document.querySelectorAll(".nav-btn")[2]);
+        switchView("traceability", document.querySelectorAll(".nav-btn")[3]);
         const input = document.getElementById("trace-search-q");
-        input.value = q;
-        onTraceSearch();
+        if (input) {
+          input.value = q;
+          onTraceSearch();
+        }
       }
 
       function renderTable(entries) {
         const body = document.getElementById("table-body");
+        const stateClassMap = {
+          opened: "sb-opened",
+          merged: "sb-merged",
+          closed: "sb-closed",
+          locked: "sb-locked",
+          open: "sb-opened",
+        };
+
         if (!entries.length) {
-          body.innerHTML = `<div class="empty"><div class="empty-ico">⎇</div><div class="empty-title">No events match</div><div class="empty-sub">Try adjusting filters.</div></div>`;
+          body.innerHTML = `<div class="empty"><div class="empty-ico"><i class="fa-solid fa-code-branch"></i></div><div class="empty-title">No events match</div><div class="empty-sub">Try adjusting filters.</div></div>`;
           return;
         }
         body.innerHTML = entries
@@ -5426,6 +5603,18 @@
             const d = new Date(e.timestamp);
             const timeStr = `${d.toLocaleDateString([], { month: "short", day: "numeric" })}<br>${d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
             const tc = typeBadgeClass[e.type] || "tb-commit";
+
+            const stateBadge = e.mr_state
+              ? `<span class="type-badge ${stateClassMap[e.mr_state] || "sb-closed"}">${e.mr_state}</span>`
+              : " ";
+
+            const authorContent = `
+              <div class="cell-author" title="${e.author_name || e.author}">
+                ${e.author_avatar ? `<img src="${e.author_avatar}" alt="">` : '<div style="width:18px;height:18px;border-radius:50%;background:var(--surface3)"></div>'}
+                <span>${e.author}</span>
+              </div>
+            `;
+
             const envStr = [
               e.environment &&
                 `<span class="env-badge ${envBadgeClass2[e.environment] || "eb-dev"}">${e.environment}</span>`,
@@ -5435,25 +5624,29 @@
               .filter(Boolean)
               .join(" ");
             const link = e.url
-              ? `<a href="${e.url}" target="_blank" class="icon-btn" title="Open">↗</a>`
+              ? `<a href="${e.url}" target="_blank" class="icon-btn" title="Open"><i class="fa-solid fa-up-right-from-square"></i></a>`
               : "";
             const traceQuery = e.commit || e.branch || e.mr_number || "";
             const traceBtn = traceQuery
-              ? `<button class="icon-btn" onclick="jumpToTrace('${traceQuery}')" title="Trace lifecycle">🔍</button>`
+              ? `<button class="icon-btn" onclick="jumpToTrace('${traceQuery}')" title="Trace Flow"><i class="fa-solid fa-crosshairs"></i></button>`
               : "";
 
             return `<div class="table-row">
-             <div class="cell-time">${timeStr}</div>
-             <div class="cell-project">${e.project || "—"}</div>
-             <div class="cell-branch">${e.branch || "—"}</div>
-             <div><span class="type-badge ${tc}">${e.type || "?"}</span></div>
-             <div class="cell-msg" title="${e.message || ""}">${e.message || "—"}${e.mr_number ? ` <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">${e.mr_number}</span>` : ""}</div>
-             <div style="display:flex;flex-direction:column;gap:2px">${envStr}</div>
-             <div class="cell-actions">${traceBtn}${link}<button class="icon-btn" onclick="deleteEntry('${e.id}')" title="Delete">×</button></div>
-           </div>`;
+              <div class="cell-time">${timeStr}</div>
+              <div class="cell-project">${e.project || "—"}</div>
+              ${authorContent}
+              <div class="cell-branch">${e.branch || "—"}</div>
+              <div><span class="type-badge ${tc}">${e.type || "?"}</span></div>
+              <div>${stateBadge}</div>
+              <div class="cell-msg" title="${e.message || ""}">${e.message || "—"}${e.mr_number ? ` <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">${e.mr_number}</span>` : ""}</div>
+              <div style="display:flex; align-items:start; flex-direction:column; gap:2px">${envStr}</div>
+              <div class="cell-actions">${traceBtn}${link}</div>
+            </div>`;
           })
           .join("");
       }
+
+      // <button class="icon-btn" onclick="deleteEntry('${e.id}')" title="Delete"><i class="fa-solid fa-trash-can"></i></button>
 
       function renderTimeline(entries) {
         const tl = document.getElementById("timeline-body");
@@ -5492,15 +5685,16 @@
                  <div class="tl-content">
                    <div style="display:flex; justify-content:space-between; align-items:flex-start">
                      <div class="tl-title">${e.message || "—"}</div>
-                     ${traceQuery ? `<button class="icon-btn" onclick="jumpToTrace('${traceQuery}')" title="Trace lifecycle" style="font-size:10px; margin-top:-2px">Trace 🔍</button>` : ""}
+                     ${traceQuery ? `<button class="icon-btn" onclick="jumpToTrace('${traceQuery}')" title="Trace Flow" style="font-size:10px; margin-top:-2px">Trace <i class="fa-solid fa-crosshairs"></i></button>` : ""}
                    </div>
                    <div class="tl-meta">${e.project} · ${e.branch || ""}${e.author ? " · " + e.author : ""} · ${timeAgo(e.timestamp)}</div>
                    <div class="tl-badges">
                      <span class="type-badge ${typeBadgeClass[e.type] || "tb-commit"}">${e.type || "?"}</span>
+                     ${e.mr_state ? `<span class="type-badge ${{ opened: "sb-opened", merged: "sb-merged", closed: "sb-closed", locked: "sb-locked", open: "sb-opened" }[e.mr_state] || "sb-closed"}">${e.mr_state}</span>` : ""}
                      ${e.environment ? `<span class="env-badge ${envBadgeClass2[e.environment] || "eb-dev"}">${e.environment}</span>` : ""}
-                     ${e.tag ? `<span class="type-badge tb-tag">🏷 ${e.tag}</span>` : ""}
+                     ${e.tag ? `<span class="type-badge tb-tag"><i class="fa-solid fa-tag"></i> ${e.tag}</span>` : ""}
                      ${e.mr_number ? `<span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">${e.mr_number}</span>` : ""}
-                     ${e.url ? `<a href="${e.url}" target="_blank" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--accent)">↗</a>` : ""}
+                     ${e.url ? `<a href="${e.url}" target="_blank" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--accent)"><i class="fa-solid fa-up-right-from-square"></i></a>` : ""}
                    </div>
                  </div>
                </div>`;
@@ -5509,7 +5703,7 @@
            </div>`,
             )
             .join("") ||
-          '<div class="empty"><div class="empty-ico">⎇</div><div class="empty-title">No events</div></div>';
+          '<div class="empty"><div class="empty-ico"><i class="fa-solid fa-code-branch"></i></div><div class="empty-title">No events</div></div>';
       }
 
       function switchDORAPeriod(period, el) {
@@ -5717,7 +5911,7 @@
       function renderRepos() {
         const grid = document.getElementById("repos-grid");
         if (!state.repos.length) {
-          grid.innerHTML = `<div class="empty"><div class="empty-ico">📁</div><div class="empty-title">No repos connected</div><div class="empty-sub">Connect GitHub or GitLab.</div></div>`;
+          grid.innerHTML = `<div class="empty"><div class="empty-ico"><i class="fa-solid fa-folder-open"></i></div><div class="empty-title">No repos connected</div><div class="empty-sub">Connect GitHub or GitLab.</div></div>`;
           return;
         }
         grid.innerHTML = [...state.repos]
@@ -5797,6 +5991,117 @@
         toast("Entry removed");
       }
 
+      function renderCommitHistory() {
+        const q = (
+          document.getElementById("history-search-q")?.value || ""
+        ).toLowerCase();
+
+        // Filter for commits only
+        const commits = state.entries.filter((e) => e.type === "commit");
+
+        const filtered = commits
+          .filter((e) => {
+            const hay = [e.project, e.author, e.message, e.commit]
+              .join(" ")
+              .toLowerCase();
+            return !q || hay.includes(q);
+          })
+          .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+        const countEl = document.getElementById("history-count");
+        if (countEl) countEl.textContent = filtered.length;
+
+        const body = document.getElementById("history-body");
+        if (!body) return;
+
+        if (!filtered.length) {
+          body.innerHTML =
+            '<div class="empty"><div class="empty-title">No commits found</div></div>';
+          return;
+        }
+
+        body.innerHTML = filtered
+          .slice(0, 150)
+          .map((c) => {
+            const d = new Date(c.timestamp);
+            const timeStr = d.toLocaleDateString([], {
+              month: "short",
+              day: "numeric",
+            });
+
+            // Trace the Merge Journey logic
+            let journey = [];
+
+            const getEnvClass = (br) => {
+              const b = (br || "").toLowerCase();
+              if (b.includes("prod") || b === "main" || b === "master")
+                return "eb-prod";
+              if (b.includes("staging") || b === "uat") return "eb-staging";
+              if (b.includes("qa")) return "eb-qa";
+              if (b.includes("dev") || b === "develop") return "eb-dev";
+              return "tb-commit"; // default fallback style
+            };
+
+            if (c.branch) {
+              journey.push(
+                `<span class="env-badge ${getEnvClass(c.branch)}">${c.branch}</span>`,
+              );
+
+              let currentBranch = c.branch;
+              let safety = 0;
+              let hasMore = true;
+
+              while (hasMore && safety < 4) {
+                // Find the most recent merge where this branch was the source
+                const mergeEvent = state.entries.find(
+                  (e) =>
+                    e.type === "merge" &&
+                    e.branch === currentBranch &&
+                    e.project === c.project &&
+                    new Date(e.timestamp) >= new Date(c.timestamp),
+                );
+
+                if (
+                  mergeEvent &&
+                  mergeEvent.merge_target &&
+                  mergeEvent.merge_target !== currentBranch
+                ) {
+                  const mTime = timeAgo(mergeEvent.timestamp);
+                  const tgt = mergeEvent.merge_target;
+                  journey.push(
+                    `<span class="journey-arrow"><i class="fa-solid fa-chevron-right"></i></span>`,
+                  );
+                  journey.push(
+                    `<span class="env-badge ${getEnvClass(tgt)}" title="Merged ${mTime}">${tgt}</span>`,
+                  );
+                  currentBranch = tgt;
+                  safety++;
+                } else {
+                  hasMore = false;
+                }
+              }
+            }
+
+            return `
+          <div class="table-row" style="grid-template-columns: 100px 220px 180px 1fr 180px 80px">
+          <div class="cell-time">${timeStr}</div>
+          <div class="cell-project">${c.project}</div>
+          <div class="cell-author">
+          ${c.author_avatar ? `<img src="${c.author_avatar}" style="width:16px;height:16px;border-radius:50%">` : '<div style="width:16px;height:16px;border-radius:50%;background:var(--surface3)"></div>'}
+          <span>${c.author}</span>
+          </div>
+          <div class="cell-msg" title="${c.message}">${c.message}</div>
+          <div class="journey-wrap">${journey.length ? journey.join("") : '<span class="env-badge tb-commit">local</span>'}</div>
+          <div class="cell-actions">
+            <button class="icon-btn" onclick="jumpToTrace('${c.commit || c.branch}')" title="Trace Flow"><i class="fa-solid fa-crosshairs"></i></button>
+            ${c.url ? `<a href="${c.url}" target="_blank" class="icon-btn"><i class="fa-solid fa-up-right-from-square"></i></a>` : ""}
+          </div>
+          </div>
+          `;
+          })
+          .join("");
+      }
+
       // ═══════════════════════════════════════════
       //  VIEWS
       // ═══════════════════════════════════════════
@@ -5810,6 +6115,7 @@
         [
           "dashboard",
           "log",
+          "history",
           "repos",
           "mergetracker",
           "analytics",
@@ -5824,6 +6130,7 @@
                 ? // FIXED: Added "dashboard" to use flex display
                   v === "dashboard" ||
                   v === "log" ||
+                  v === "history" ||
                   v === "mergetracker" ||
                   v === "analytics" ||
                   v === "traceability" ||
@@ -5834,6 +6141,7 @@
                 : "none";
         });
 
+        if (name === "history") renderCommitHistory();
         if (name === "mergetracker") renderMergeTracker();
         if (name === "analytics") renderAnalytics();
         if (name === "envdiff") runEnvDiff();
@@ -5849,11 +6157,11 @@
         const views = [
           "dashboard",
           "log",
+          "history",
           "traceability",
           "mergetracker",
           "repos",
           "analytics",
-          "envdiff",
           "dora",
         ];
         if (views.includes(hash)) {
@@ -5968,7 +6276,10 @@
       function togglePwd(id, btn) {
         const inp = document.getElementById(id);
         inp.type = inp.type === "password" ? "text" : "password";
-        btn.textContent = inp.type === "password" ? "👁" : "🙈";
+        btn.innerHTML =
+          inp.type === "password"
+            ? '<i class="fa-solid fa-eye"></i>'
+            : '<i class="fa-solid fa-eye-slash"></i>';
       }
 
       // ═══════════════════════════════════════════
@@ -6149,11 +6460,11 @@
         const views = [
           "dashboard",
           "log",
+          "history",
           "traceability",
           "mergetracker",
           "repos",
           "analytics",
-          "envdiff",
           "dora",
         ];
         const num = parseInt(e.key);
@@ -6282,10 +6593,17 @@
       function renderMergeFlow() {
         const merges = getMergeEntries().slice(0, 50);
         const el = document.getElementById("mt-flow-list");
+        const stateClassMap = {
+          opened: "sb-opened",
+          merged: "sb-merged",
+          closed: "sb-closed",
+          locked: "sb-locked",
+          open: "sb-opened",
+        };
         document.getElementById("mt-flow-count").textContent = merges.length;
         if (!merges.length) {
           el.innerHTML =
-            '<div class="empty" style="padding:30px"><div class="empty-ico">🔀</div><div class="empty-title">No merges tracked</div><div class="empty-sub">Connect GitHub/GitLab or add merge entries manually.</div></div>';
+            '<div class="empty" style="padding:30px"><div class="empty-ico"><i class="fa-solid fa-shuffle"></i></div><div class="empty-title">No merges tracked</div><div class="empty-sub">Connect GitHub/GitLab or add merge entries manually.</div></div>';
           return;
         }
         const prodTgts = ["main", "master", "prod", "production"];
@@ -6297,14 +6615,29 @@
             const tgtCls = isProd ? "flow-tgt-prod" : "flow-tgt";
             const src = e.branch || e.source_branch || "?";
             const tgt = e.merge_target || "?";
+
+            const stateBadge = e.mr_state
+              ? `<span class="type-badge ${stateClassMap[e.mr_state] || "sb-closed"}" style="font-size:8px; padding:1px 4px; margin-left:14px">${e.mr_state}</span>`
+              : "";
+
+            const authorHtml = e.author
+              ? `
+              <div class="cell-author" style="gap:4px; margin-right:4px" title="${e.author_name || e.author}">
+                ${e.author_avatar ? `<img src="${e.author_avatar}" style="width:14px; height:14px">` : '<div style="width:14px;height:14px;border-radius:50%;background:var(--surface3)"></div>'}
+                <span style="font-size:10px">${e.author}</span>
+              </div>
+            `
+              : "";
+
             return `<div class="flow-item">
                    <span class="flow-branch flow-src" title="${src}">${src}</span>
-                   <span class="flow-arrow">→</span>
+                   <span class="flow-arrow"><i class="fa-solid fa-arrow-right-long"></i></span>
                    <span class="flow-branch ${tgtCls}" title="${tgt}">${tgt}</span>
-                   <span class="flow-meta">${e.message || "—"}${e.mr_number ? ' <span style="color:var(--text3)">' + e.mr_number + "</span>" : ""}</span>
+                   <span class="flow-meta" style="margin-left:0px">${e.message || "—"}${e.mr_number ? ' <span style="color:var(--text3)">' + e.mr_number + "</span>" : ""}${stateBadge}</span>
+                   ${authorHtml}
                    <span class="flow-project-tag">${e.project || ""}</span>
                    <span class="flow-time">${timeAgo(e.timestamp)}</span>
-                   ${e.url ? '<a href="' + e.url + '" target="_blank" class="icon-btn" title="Open">↗</a>' : ""}
+                   ${e.url ? '<a href="' + e.url + '" target="_blank" class="icon-btn" title="Open"><i class="fa-solid fa-up-right-from-square"></i></a>' : ""}
                  </div>`;
           })
           .join("");
@@ -6387,7 +6720,7 @@
           pending.length;
         if (!pending.length) {
           el.innerHTML =
-            '<div class="empty" style="padding:24px"><div class="empty-ico">✅</div><div class="empty-title">All clear</div><div class="empty-sub">No branches waiting for production promotion.</div></div>';
+            '<div class="empty" style="padding:24px"><div class="empty-ico"><i class="fa-solid fa-circle-check"></i></div><div class="empty-title">All clear</div><div class="empty-sub">No branches waiting for production promotion.</div></div>';
           return;
         }
         el.innerHTML = pending
@@ -6396,7 +6729,7 @@
             const reached = p.reachedEnvs
               .map((env) => {
                 const cls = envBadgeClass2[env] || "eb-dev";
-                return `<span class="env-badge ${cls}">${env} ✓</span>`;
+                return `<span class="env-badge ${cls}">${env} <i class="fa-solid fa-check" style="font-size:8px"></i></span>`;
               })
               .join("");
             const missing = prodTgts
@@ -6404,11 +6737,11 @@
               .slice(0, 2)
               .map(
                 (env) =>
-                  `<span class="env-badge" style="background:var(--red-lt);color:var(--red)">${env} ✗</span>`,
+                  `<span class="env-badge" style="background:var(--red-lt);color:var(--red)">${env} <i class="fa-solid fa-xmark" style="font-size:8px"></i></span>`,
               )
               .join("");
             return `<div class="pending-card">
-                   <div class="pending-icon">⏳</div>
+                   <div class="pending-icon"><i class="fa-solid fa-hourglass-half"></i></div>
                    <div class="pending-info">
                      <div class="pending-branch">${p.branch}</div>
                      <div class="pending-detail">${p.project || "—"} · last merge ${timeAgo(p.lastMerge)}</div>
@@ -6465,7 +6798,7 @@
           branches.length;
         if (!branches.length) {
           el.innerHTML =
-            '<div class="empty" style="padding:24px"><div class="empty-ico">🔄</div><div class="empty-title">No lifecycle data</div><div class="empty-sub">Merge branches to environment targets to track their lifecycle.</div></div>';
+            '<div class="empty" style="padding:24px"><div class="empty-ico"><i class="fa-solid fa-arrows-rotate"></i></div><div class="empty-title">No lifecycle data</div><div class="empty-sub">Merge branches to environment targets to track their lifecycle.</div></div>';
           return;
         }
         el.innerHTML = branches
@@ -6475,7 +6808,9 @@
               .map((stage, i) => {
                 const done = b.stages.has(stage);
                 const nodeCls = done ? "done" : "pending";
-                const icon = done ? "✓" : "·";
+                const icon = done
+                  ? '<i class="fa-solid fa-check"></i>'
+                  : '<i class="fa-solid fa-circle" style="font-size:4px; opacity:0.3"></i>';
                 const connector =
                   i < envStages.length - 1
                     ? `<div class="lifecycle-connector ${done && b.stages.has(envStages[i + 1]) ? "done" : ""}"></div>`
@@ -6660,7 +6995,7 @@
         if (!matches.length) {
           content.style.display = "none";
           empty.style.display = "block";
-          empty.innerHTML = `<div class="mt-sr-empty"><div class="mt-sr-empty-ico">❌</div><div class="mt-sr-empty-title">No matches for "${q}"</div><div class="mt-sr-empty-sub">Try a full commit hash, branch name (e.g. feature/login), or PR number (#42).</div></div>`;
+          empty.innerHTML = `<div class="mt-sr-empty"><div class="mt-sr-empty-ico"><i class="fa-solid fa-circle-xmark"></i></div><div class="mt-sr-empty-title">No matches for "${q}"</div><div class="mt-sr-empty-sub">Try a full commit hash, branch name (e.g. feature/login), or PR number (#42).</div></div>`;
           return;
         }
 
@@ -6790,7 +7125,7 @@
 
         content.innerHTML = `
     <div class="status-banner ${statusClass}">
-      ${isProd ? "✅" : "⏳"} ${statusText}
+      ${isProd ? '<i class="fa-solid fa-circle-check"></i>' : '<i class="fa-solid fa-hourglass-half"></i>'} ${statusText}
     </div>
 
     <div class="trace-card">
@@ -6801,38 +7136,39 @@
 
       <div class="trace-meta-grid">
         <div class="trace-meta-item"><div class="label">Commit Hash</div><div class="value">${anchor.commit || "—"}</div></div>
-        <div class="trace-meta-item"><div class="label">Author</div><div class="value">${anchor.author}</div></div>
+        <div class="trace-meta-item"><div class="label">Author</div><div class="value" style="display:flex; align-items:center; gap:6px">${anchor.author_avatar ? `<img src="${anchor.author_avatar}" style="width:16px;height:16px;border-radius:50%">` : ""}${anchor.author}</div></div>
         <div class="trace-meta-item"><div class="label">Repository</div><div class="value">${anchor.project}</div></div>
         <div class="trace-meta-item"><div class="label">Branch</div><div class="value" style="color:var(--accent)">${anchor.branch}</div></div>
         <div class="trace-meta-item"><div class="label">Merge Date</div><div class="value">${mergeDate}</div></div>
         <div class="trace-meta-item"><div class="label">Deploy Date</div><div class="value">${deployDate}</div></div>
         <div class="trace-meta-item"><div class="label">Current Environment</div><div class="value">${currentEnv}</div></div>
         <div class="trace-meta-item"><div class="label">MR/PR #</div><div class="value">${anchor.mr_number || "—"}</div></div>
+        ${anchor.mr_state ? `<div class="trace-meta-item"><div class="label">State</div><div class="value"><span class="type-badge ${{ opened: "sb-opened", merged: "sb-merged", closed: "sb-closed", locked: "sb-locked", open: "sb-opened" }[anchor.mr_state] || "sb-closed"}">${anchor.mr_state}</span></div></div>` : ""}
       </div>
 
       <div class="trace-flow-wrap">
         <div class="trace-line"><div class="trace-line-fill" style="width: ${flowWidth}"></div></div>
         
         <div class="trace-step complete">
-          <div class="trace-node">●</div>
+          <div class="trace-node"><i class="fa-solid fa-circle" style="font-size:8px"></i></div>
           <div class="trace-step-label">Commit</div>
           <div class="trace-step-status">${new Date(anchor.timestamp).toLocaleDateString()}</div>
         </div>
 
         <div class="trace-step ${isDev ? "complete" : "active"}">
-          <div class="trace-node">🔀</div>
+          <div class="trace-node"><i class="fa-solid fa-shuffle" style="font-size:10px"></i></div>
           <div class="trace-step-label">Merge</div>
           <div class="trace-step-status">${isDev ? "Done" : "Pending"}</div>
         </div>
 
         <div class="trace-step ${isStaging ? "complete" : isDev ? "active" : ""}">
-          <div class="trace-node">🚀</div>
+          <div class="trace-node"><i class="fa-solid fa-rocket" style="font-size:10px"></i></div>
           <div class="trace-step-label">Deploy</div>
           <div class="trace-step-status">${isStaging ? "Done" : "Pending"}</div>
         </div>
 
         <div class="trace-step ${isProd ? "complete" : isStaging ? "active" : ""}">
-          <div class="trace-node">🌍</div>
+          <div class="trace-node"><i class="fa-solid fa-earth-americas" style="font-size:10px"></i></div>
           <div class="trace-step-label">Production</div>
           <div class="trace-step-status">${isProd ? "Reached" : "Pending"}</div>
         </div>
@@ -6932,7 +7268,7 @@
         const el = document.getElementById("an-authors");
         if (!sorted.length) {
           el.innerHTML =
-            '<div class="empty" style="padding:24px"><div class="empty-ico">👥</div><div class="empty-title">No author data</div><div class="empty-sub">Connect a source or add entries with authors.</div></div>';
+            '<div class="empty" style="padding:24px"><div class="empty-ico"><i class="fa-solid fa-users"></i></div><div class="empty-title">No author data</div><div class="empty-sub">Connect a source or add entries with authors.</div></div>';
           return;
         }
         el.innerHTML = sorted
@@ -7051,14 +7387,14 @@
         const el = document.getElementById("an-stale");
         if (!stale.length) {
           el.innerHTML =
-            '<div class="empty" style="padding:24px"><div class="empty-ico">✅</div><div class="empty-title">No stale branches</div><div class="empty-sub">All branches have recent activity.</div></div>';
+            '<div class="empty" style="padding:24px"><div class="empty-ico"><i class="fa-solid fa-circle-check"></i></div><div class="empty-title">No stale branches</div><div class="empty-sub">All branches have recent activity.</div></div>';
           return;
         }
         el.innerHTML = stale
           .slice(0, 15)
           .map(
             (s) => `<div class="pending-card">
-                 <div class="pending-icon" style="background:var(--red-lt);color:var(--red)">⚠</div>
+                 <div class="pending-icon" style="background:var(--red-lt);color:var(--red)"><i class="fa-solid fa-triangle-exclamation"></i></div>
                  <div class="pending-info">
                    <div class="pending-branch">${s.branch}</div>
                    <div class="pending-detail">${s.project || "—"} · inactive ${s.daysAgo} days</div>
@@ -7591,11 +7927,11 @@
         const views = [
           "dashboard",
           "log",
+          "history",
           "traceability",
           "mergetracker",
           "repos",
           "analytics",
-          "envdiff",
           "dora",
         ];
         if (hash && views.includes(hash)) {
@@ -7679,7 +8015,7 @@
           results.innerHTML = `
             <div class="mt-sr-card">
               <div class="mt-sr-empty">
-                <div class="mt-sr-empty-ico">🔍</div>
+                <div class="mt-sr-empty-ico"><i class="fa-solid fa-magnifying-glass"></i></div>
                 <div class="mt-sr-empty-title">No results for "${q}"</div>
                 <div class="mt-sr-empty-sub">Try a different branch name, commit hash, or message keyword.</div>
               </div>
@@ -7729,11 +8065,27 @@
           const msgHighlighted = highlightMatch(e.message || "—", q);
           const branchHighlighted = highlightMatch(e.branch || "", q);
 
+          const stateClassMap = {
+            opened: "sb-opened",
+            merged: "sb-merged",
+            closed: "sb-closed",
+            locked: "sb-locked",
+            open: "sb-opened",
+          };
+
+          const stateBadge = e.mr_state
+            ? `<span class="type-badge ${stateClassMap[e.mr_state] || "sb-closed"}" style="font-size:8px; padding:1px 4px; margin-left:4px">${e.mr_state}</span>`
+            : "";
+
+          const authorAvatarHtml = e.author_avatar
+            ? `<img src="${e.author_avatar}" style="width:14px; height:14px; border-radius:50%; margin-right:4px">`
+            : "";
+
           return `<div class="mt-sr-item">
             <div class="mt-sr-icon ${iconType}">${icon}</div>
             <div class="mt-sr-info">
-              <div class="mt-sr-msg">${msgHighlighted}${e.mr_number ? ' <span style="color:var(--text3);font-family:DM Mono,monospace;font-size:10px">' + e.mr_number + "</span>" : ""}</div>
-              <div class="mt-sr-meta">${e.project || "—"} · ${branchHighlighted || "—"}${e.author ? " · " + e.author : ""} · ${timeAgo(e.timestamp)}</div>
+              <div class="mt-sr-msg">${msgHighlighted}${e.mr_number ? ' <span style="color:var(--text3);font-family:DM Mono,monospace;font-size:10px">' + e.mr_number + "</span>" : ""}${stateBadge}</div>
+              <div class="mt-sr-meta" style="display:flex; align-items:center">${e.project || "—"} · ${branchHighlighted || "—"} · ${authorAvatarHtml}${e.author || "—"} · ${timeAgo(e.timestamp)}</div>
             </div>
             ${
               hasFlow
@@ -7785,5 +8137,10 @@
 
       init();
     </script>
+
+    <script
+      src="https://kit.fontawesome.com/YOUR_KIT_CODE.js"
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>
