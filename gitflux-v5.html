@@ -2518,11 +2518,22 @@
         transition: all 0.15s;
         color: var(--text2);
         height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       .theme-btn:hover {
         border-color: var(--border2);
         background: var(--surface2);
+      }
+
+      .settings-btn,
+      .info-btn {
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       /* ── Author Analytics ── */
@@ -3366,11 +3377,15 @@
           >
             <i class="fa-solid fa-circle-half-stroke"></i>
           </button>
-          <button class="btn-sm" onclick="openSettingsModal()" title="Settings">
+          <button
+            class="btn-sm settings-btn"
+            onclick="openSettingsModal()"
+            title="Settings"
+          >
             <i class="fa-solid fa-gear"></i>
           </button>
           <button
-            class="btn-sm"
+            class="btn-sm info-btn"
             onclick="openShortcutsModal()"
             title="Keyboard shortcuts (?)"
           >
