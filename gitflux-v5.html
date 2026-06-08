@@ -5248,10 +5248,58 @@
       }
 
       // ═══════════════════════════════════════════
+      //  ENVIRONMENT LEVELS
+      // ═══════════════════════════════════════════
+      function getEnvLevel(br) {
+        const b = (br || "").toLowerCase();
+        if (b.includes("prod") || b === "main" || b === "master") return 4;
+        if (b.includes("staging") || b === "uat") return 3;
+        if (b.includes("qa")) return 2;
+        if (b.includes("dev") || b === "develop" || b === "development")
+          return 1;
+        return 0;
+      }
+
+      function getEnvClass(br) {
+        const lvl = getEnvLevel(br);
+        if (lvl === 4) return "eb-prod";
+        if (lvl === 3) return "eb-staging";
+        if (lvl === 2) return "eb-qa";
+        if (lvl === 1) return "eb-dev";
+        return "tb-commit"; // default fallback style
+      }
+
+      // ═══════════════════════════════════════════
       //  ENTRIES
       // ═══════════════════════════════════════════
       function addEntry(e) {
         if (state.entries.find((x) => x.id === e.id)) return;
+
+        // Auto-detect merge commits from message if type is commit
+        if (e.type === "commit" && e.message) {
+          const isMerge = /^Merge\s+(branch|pull\s+request|remote)/i.test(
+            e.message,
+          );
+          if (isMerge) {
+            e.type = "merge";
+            // Improved regex to handle "Merge branch 'X' of <url> into 'Y'"
+            const mergeMatch = e.message.match(
+              /Merge\s+(?:branch\s+)?'?([^'"\s]+)'?\s+(?:.*?\s+)?(?:into|to)\s+'?([^'"\s]+)'?/i,
+            );
+            const prMatch = e.message.match(
+              /Merge\s+pull\s+request\s+#(\d+)\s+from\s+(\S+)/i,
+            );
+            if (mergeMatch) {
+              e.branch = mergeMatch[1];
+              e.merge_target = mergeMatch[2];
+            } else if (prMatch) {
+              e.mr_number = "#" + prMatch[1];
+              e.branch = prMatch[2];
+              if (!e.merge_target) e.merge_target = "main";
+            }
+          }
+        }
+
         state.entries.unshift(e);
         if (state.entries.length > 20000)
           state.entries = state.entries.slice(0, 20000);
@@ -5582,7 +5630,34 @@
       };
 
       function renderLog() {
-        const entries = getFiltered();
+        const allEntries = getFiltered();
+        // Filter out regular commits
+        let entries = allEntries.filter((e) => e.type !== "commit");
+
+        // Filter out sync-back merges (e.g., main -> dev)
+        entries = entries.filter((e) => {
+          if (e.type === "merge" && e.branch && e.merge_target) {
+            const sLvl = getEnvLevel(e.branch);
+            const tLvl = getEnvLevel(e.merge_target);
+            // Hide if source is higher or equal level to target (and source isn't 0)
+            if (sLvl >= tLvl && sLvl > 0) return false;
+          }
+          return true;
+        });
+
+        // Deduplicate: Hide merge commits if we already have a formal MR/PR entry for them
+        const mrNumbers = new Set(
+          entries.map((e) => e.mr_number).filter(Boolean),
+        );
+        entries = entries.filter((e) => {
+          if (e.type === "merge" && !e.mr_number && e.message) {
+            for (const nr of mrNumbers) {
+              if (e.message.includes(nr)) return false;
+            }
+          }
+          return true;
+        });
+
         const isTable = state.tableView === "table";
 
         // FIXED: Synchronize element visibility with current state
@@ -6082,26 +6157,6 @@
 
             // Trace the Merge Journey logic
             let journey = [];
-
-            const getEnvLevel = (br) => {
-              const b = (br || "").toLowerCase();
-              if (b.includes("prod") || b === "main" || b === "master")
-                return 4;
-              if (b.includes("staging") || b === "uat") return 3;
-              if (b.includes("qa")) return 2;
-              if (b.includes("dev") || b === "develop" || b === "development")
-                return 1;
-              return 0;
-            };
-
-            const getEnvClass = (br) => {
-              const lvl = getEnvLevel(br);
-              if (lvl === 4) return "eb-prod";
-              if (lvl === 3) return "eb-staging";
-              if (lvl === 2) return "eb-qa";
-              if (lvl === 1) return "eb-dev";
-              return "tb-commit"; // default fallback style
-            };
 
             if (c.branch && c.branch !== "unknown") {
               journey.push(
