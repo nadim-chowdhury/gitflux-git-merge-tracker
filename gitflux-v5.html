@@ -1091,7 +1091,7 @@
 
       .table-head {
         display: grid;
-        grid-template-columns: 110px 180px 140px 160px 85px 85px 1fr 90px 72px;
+        grid-template-columns: 110px 160px 130px 140px 140px 85px 1fr 72px;
         gap: 10px;
         padding: 8px 14px;
         background: var(--surface);
@@ -1109,7 +1109,7 @@
 
       .table-row {
         display: grid;
-        grid-template-columns: 110px 180px 140px 160px 85px 85px 1fr 90px 72px;
+        grid-template-columns: 110px 160px 130px 140px 140px 85px 1fr 72px;
         gap: 10px;
         padding: 9px 14px;
         border-bottom: 1px solid var(--border);
@@ -3802,9 +3802,9 @@
 
             <div id="view-table" class="table-wrap">
               <div class="table-head">
-                <span>Time</span><span>Project</span><span>Author</span
-                ><span>Branch</span> <span>Type</span><span>State</span
-                ><span>Message</span><span>Env / Server</span><span></span>
+                <span>Time</span><span>Project</span><span>Author</span>
+                <span>From Branch</span><span>To Branch</span><span>State</span>
+                <span>Message</span><span style="text-align: end">Actions</span>
               </div>
               <div class="table-body" id="table-body">
                 <div class="empty">
@@ -3850,7 +3850,7 @@
               >
                 <span>Time</span><span>Project</span><span>Author</span
                 ><span>Message</span><span>Merge Journey</span
-                ><span>Actions</span>
+                ><span style="text-align: end">Actions</span>
               </div>
               <div class="table-body" id="history-body">
                 <!-- JS will render rows here -->
@@ -3950,23 +3950,36 @@
               </div>
               <div class="mt-search-results" id="mt-search-results"></div>
             </div>
-            <div class="mt-stats" id="mt-stats"></div>
+
             <div
               style="
                 display: flex;
+                justify-content: space-between;
                 align-items: center;
-                gap: 8px;
-                flex-wrap: wrap;
               "
             >
-              <div class="proj-pills" id="mt-proj-pills" style="flex: 1"></div>
-              <button
-                class="btn-sm"
-                onclick="exportMergeReport()"
-                title="Export merge report"
+              <div class="mt-stats" id="mt-stats"></div>
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  flex-wrap: wrap;
+                "
               >
-                <i class="fa-solid fa-file-export"></i> Export Report
-              </button>
+                <div
+                  class="proj-pills"
+                  id="mt-proj-pills"
+                  style="flex: 1"
+                ></div>
+                <button
+                  class="btn-sm"
+                  onclick="exportMergeReport()"
+                  title="Export merge report"
+                >
+                  <i class="fa-solid fa-file-export"></i> Export Report
+                </button>
+              </div>
             </div>
 
             <div class="mt-grid">
@@ -4059,7 +4072,7 @@
                 </div>
                 <div
                   id="an-authors"
-                  style="max-height: 380px; overflow-y: auto"
+                  style="max-height: 480px; overflow-y: auto"
                 ></div>
               </div>
 
@@ -4990,7 +5003,7 @@
                   source: "github",
                   type: "commit",
                   project: repo.name,
-                  branch: repo.default_branch,
+                  branch: "", // Don't assume default branch
                   commit: c.sha.slice(0, 7),
                   message: c.commit.message,
                   author: c.author?.login || c.commit.author?.name || "—",
@@ -5139,7 +5152,7 @@
                   source: "gitlab",
                   type: "commit",
                   project: proj.name,
-                  branch: proj.default_branch || "main",
+                  branch: "", // Don't assume default branch
                   commit: c.short_id,
                   message: c.message || c.title,
                   author: c.author_name,
@@ -5655,11 +5668,10 @@
               <div class="cell-time">${timeStr}</div>
               <div class="cell-project">${e.project || "—"}</div>
               ${authorContent}
-              ${branchInfo}
-              <div><span class="type-badge ${tc}">${e.type || "?"}</span></div>
+              <div class="cell-branch" title="${e.branch || ""}">${e.branch || "—"}</div>
+              <div class="cell-branch" title="${e.merge_target || ""}">${e.merge_target || "—"}</div>
               <div>${stateBadge}</div>
               <div class="cell-msg" title="${e.message || ""}">${e.message || "—"}${e.mr_number ? ` <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">${e.mr_number}</span>` : ""}</div>
-              <div style="display:flex; align-items:start; flex-direction:column; gap:2px">${envStr}</div>
               <div class="cell-actions">${traceBtn}${link}</div>
             </div>`;
           })
@@ -6071,17 +6083,27 @@
             // Trace the Merge Journey logic
             let journey = [];
 
-            const getEnvClass = (br) => {
+            const getEnvLevel = (br) => {
               const b = (br || "").toLowerCase();
               if (b.includes("prod") || b === "main" || b === "master")
-                return "eb-prod";
-              if (b.includes("staging") || b === "uat") return "eb-staging";
-              if (b.includes("qa")) return "eb-qa";
-              if (b.includes("dev") || b === "develop") return "eb-dev";
+                return 4;
+              if (b.includes("staging") || b === "uat") return 3;
+              if (b.includes("qa")) return 2;
+              if (b.includes("dev") || b === "develop" || b === "development")
+                return 1;
+              return 0;
+            };
+
+            const getEnvClass = (br) => {
+              const lvl = getEnvLevel(br);
+              if (lvl === 4) return "eb-prod";
+              if (lvl === 3) return "eb-staging";
+              if (lvl === 2) return "eb-qa";
+              if (lvl === 1) return "eb-dev";
               return "tb-commit"; // default fallback style
             };
 
-            if (c.branch) {
+            if (c.branch && c.branch !== "unknown") {
               journey.push(
                 `<span class="env-badge ${getEnvClass(c.branch)}">${c.branch}</span>`,
               );
@@ -6091,14 +6113,27 @@
               let hasMore = true;
 
               while (hasMore && safety < 4) {
-                // Find the most recent merge where this branch was the source
-                const mergeEvent = state.entries.find(
-                  (e) =>
-                    e.type === "merge" &&
-                    e.branch === currentBranch &&
-                    e.project === c.project &&
-                    new Date(e.timestamp) >= new Date(c.timestamp),
-                );
+                // Find the earliest merge after this commit where this branch was the source
+                // and it merges into a higher or equal level environment
+                const merges = state.entries
+                  .filter(
+                    (e) =>
+                      e.type === "merge" &&
+                      e.branch === currentBranch &&
+                      e.project === c.project &&
+                      new Date(e.timestamp) >= new Date(c.timestamp),
+                  )
+                  .sort(
+                    (a, b) => new Date(a.timestamp) - new Date(b.timestamp),
+                  );
+
+                const mergeEvent = merges.find((m) => {
+                  const tgtLvl = getEnvLevel(m.merge_target);
+                  const curLvl = getEnvLevel(currentBranch);
+                  // Allow forward merges or same-level merges (like different staging envs)
+                  // but prevent obvious sync-backs like main -> dev
+                  return tgtLvl >= curLvl || curLvl === 0;
+                });
 
                 if (
                   mergeEvent &&
@@ -6918,7 +6953,7 @@
               type = "merge";
               mrNumber = "#" + prMatch[1];
               branch = prMatch[2];
-              mergeTarget = "main";
+              mergeTarget = ""; // Don't hardcode main
             }
             let environment = "";
             const tgt = (mergeTarget || "").toLowerCase();
