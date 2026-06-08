@@ -931,15 +931,14 @@
 
       .merge-info {
         flex: 1;
-        overflow: hidden;
+        min-width: 0;
       }
 
       .merge-msg {
         font-size: 11.5px;
         color: var(--text);
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        word-break: break-word;
+        white-space: normal;
       }
 
       .merge-meta {
@@ -1185,9 +1184,7 @@
       .cell-project {
         font-weight: 600;
         font-size: 12px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        word-break: break-word;
       }
 
       .cell-branch {
@@ -1206,9 +1203,8 @@
       .cell-msg {
         font-size: 11.5px;
         color: var(--text2);
-        /* overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap; */
+        word-break: break-word;
+        white-space: normal;
         padding-right: 10px;
       }
 
@@ -1398,6 +1394,7 @@
         font-size: 12.5px;
         font-weight: 500;
         color: var(--text);
+        word-break: break-word;
       }
 
       .tl-meta {
@@ -1862,10 +1859,7 @@
         padding: 3px 9px;
         border-radius: 4px;
         font-weight: 500;
-        white-space: nowrap;
-        /* max-width: 160px; */
-        overflow: hidden;
-        text-overflow: ellipsis;
+        word-break: break-word;
       }
 
       .flow-src {
@@ -1892,9 +1886,10 @@
 
       .flow-meta {
         flex: 1;
-        overflow: hidden;
         font-size: 11px;
         color: var(--text2);
+        word-break: break-word;
+        white-space: normal;
       }
 
       .flow-time {
@@ -2355,7 +2350,6 @@
 
       .mt-sr-info {
         flex: 1;
-        overflow: hidden;
         min-width: 0;
       }
 
@@ -2363,9 +2357,8 @@
         font-size: 12px;
         font-weight: 500;
         color: var(--text);
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        word-break: break-word;
+        white-space: normal;
       }
 
       .mt-sr-meta {
@@ -2373,9 +2366,8 @@
         color: var(--text3);
         font-family: "DM Mono", monospace;
         margin-top: 2px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        word-break: break-word;
+        white-space: normal;
       }
 
       .mt-sr-flow {
@@ -3571,6 +3563,12 @@
                 <option value="github">GitHub</option>
                 <option value="gitlab">GitLab</option>
                 <option value="manual">Manual</option>
+              </select>
+            </div>
+            <div class="flt-grp">
+              <label class="flt-lbl">Developer</label>
+              <select class="flt-sel" id="f-author" onchange="applyFilters()">
+                <option value="">All developers</option>
               </select>
             </div>
             <div class="flt-grp">
@@ -4967,7 +4965,7 @@
             "/user/repos?per_page=100&sort=pushed&type=all",
           );
           state.repos = state.repos.filter((r) => r.source !== "github");
-          for (const repo of repos.slice(0, 30)) {
+          for (const repo of repos.slice(0, 60)) {
             state.repos.push({
               id: `gh-${repo.id}`,
               source: "github",
@@ -4984,7 +4982,7 @@
             });
             try {
               const commits = await ghFetch(
-                `/repos/${repo.full_name}/commits?per_page=10`,
+                `/repos/${repo.full_name}/commits?per_page=100`,
               );
               for (const c of commits)
                 addEntry({
@@ -4994,8 +4992,8 @@
                   project: repo.name,
                   branch: repo.default_branch,
                   commit: c.sha.slice(0, 7),
-                  message: c.commit.message.split("\n")[0],
-                  author: c.commit.author?.name || c.author?.login || "—",
+                  message: c.commit.message,
+                  author: c.author?.login || c.commit.author?.name || "—",
                   timestamp: c.commit.author?.date || new Date().toISOString(),
                   environment: "",
                   server: "",
@@ -5004,7 +5002,7 @@
             } catch (e) {}
             try {
               const prs = await ghFetch(
-                `/repos/${repo.full_name}/pulls?state=all&per_page=10`,
+                `/repos/${repo.full_name}/pulls?state=all&per_page=50`,
               );
               for (const pr of prs)
                 addEntry({
@@ -5028,7 +5026,7 @@
             } catch (e) {}
             try {
               const releases = await ghFetch(
-                `/repos/${repo.full_name}/releases?per_page=5`,
+                `/repos/${repo.full_name}/releases?per_page=20`,
               );
               for (const rel of releases)
                 addEntry({
@@ -5114,10 +5112,10 @@
         setSyncing(true);
         try {
           const projects = await glFetch(
-            "/projects?membership=true&per_page=50&order_by=last_activity_at&simple=true",
+            "/projects?membership=true&per_page=100&order_by=last_activity_at&simple=true",
           );
           state.repos = state.repos.filter((r) => r.source !== "gitlab");
-          for (const proj of projects.slice(0, 25)) {
+          for (const proj of projects.slice(0, 50)) {
             state.repos.push({
               id: `gl-${proj.id}`,
               source: "gitlab",
@@ -5133,7 +5131,7 @@
             const pid = encodeURIComponent(proj.path_with_namespace);
             try {
               const commits = await glFetch(
-                `/projects/${pid}/repository/commits?per_page=10`,
+                `/projects/${pid}/repository/commits?per_page=100`,
               );
               for (const c of commits)
                 addEntry({
@@ -5143,7 +5141,7 @@
                   project: proj.name,
                   branch: proj.default_branch || "main",
                   commit: c.short_id,
-                  message: c.title,
+                  message: c.message || c.title,
                   author: c.author_name,
                   timestamp: c.committed_date,
                   environment: "",
@@ -5152,7 +5150,7 @@
             } catch (e) {}
             try {
               const mrs = await glFetch(
-                `/projects/${pid}/merge_requests?per_page=10&order_by=updated_at`,
+                `/projects/${pid}/merge_requests?per_page=50&order_by=updated_at`,
               );
               for (const mr of mrs)
                 addEntry({
@@ -5163,7 +5161,7 @@
                   branch: mr.source_branch,
                   merge_target: mr.target_branch,
                   message: mr.title,
-                  author: mr.author?.username || "—",
+                  author: mr.author?.username || mr.author?.name || "—",
                   author_name: mr.author?.name || "",
                   author_avatar: mr.author?.avatar_url || "",
                   timestamp: mr.merged_at || mr.created_at,
@@ -5178,7 +5176,7 @@
             } catch (e) {}
             try {
               const tags = await glFetch(
-                `/projects/${pid}/repository/tags?per_page=5`,
+                `/projects/${pid}/repository/tags?per_page=20`,
               );
               for (const tag of tags)
                 addEntry({
@@ -5198,7 +5196,7 @@
             } catch (e) {}
             try {
               const pipelines = await glFetch(
-                `/projects/${pid}/pipelines?per_page=10`,
+                `/projects/${pid}/pipelines?per_page=30`,
               );
               for (const pipe of pipelines)
                 addEntry({
@@ -5242,8 +5240,8 @@
       function addEntry(e) {
         if (state.entries.find((x) => x.id === e.id)) return;
         state.entries.unshift(e);
-        if (state.entries.length > 5000)
-          state.entries = state.entries.slice(0, 5000);
+        if (state.entries.length > 20000)
+          state.entries = state.entries.slice(0, 20000);
       }
 
       function getFiltered() {
@@ -5253,6 +5251,7 @@
         const type = document.getElementById("f-type")?.value || "";
         const env = document.getElementById("f-env")?.value || "";
         const src = document.getElementById("f-source")?.value || "";
+        const author = document.getElementById("f-author")?.value || "";
         const days = parseInt(document.getElementById("f-date")?.value || "0");
         const cutoff = days ? Date.now() - days * 86400000 : 0;
 
@@ -5263,6 +5262,7 @@
             if (type && e.type !== type) return false;
             if (env && e.environment !== env) return false;
             if (src && e.source !== src) return false;
+            if (author && e.author !== author) return false;
             if (cutoff && new Date(e.timestamp).getTime() < cutoff)
               return false;
             if (q) {
@@ -5300,6 +5300,7 @@
         renderRepos();
         renderSidebarRepos();
         updateProjectsDL();
+        updateAuthorsFilter();
         renderMergeTracker();
         renderAnalytics();
         renderCommitHistory();
@@ -5613,7 +5614,7 @@
           return;
         }
         body.innerHTML = entries
-          .slice(0, 200)
+          .slice(0, 500)
           .map((e) => {
             const d = new Date(e.timestamp);
             const timeStr = `${d.toLocaleDateString([], { month: "short", day: "numeric" })}<br>${d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
@@ -5629,6 +5630,10 @@
                 <span>${e.author}</span>
               </div>
             `;
+
+            const branchInfo = e.merge_target 
+              ? `<div class="cell-branch" title="${e.branch} → ${e.merge_target}">${e.branch}<span style="color:var(--text3); margin:0 4px">→</span>${e.merge_target}</div>`
+              : `<div class="cell-branch" title="${e.branch}">${e.branch || "—"}</div>`;
 
             const envStr = [
               e.environment &&
@@ -5650,7 +5655,7 @@
               <div class="cell-time">${timeStr}</div>
               <div class="cell-project">${e.project || "—"}</div>
               ${authorContent}
-              <div class="cell-branch">${e.branch || "—"}</div>
+              ${branchInfo}
               <div><span class="type-badge ${tc}">${e.type || "?"}</span></div>
               <div>${stateBadge}</div>
               <div class="cell-msg" title="${e.message || ""}">${e.message || "—"}${e.mr_number ? ` <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">${e.mr_number}</span>` : ""}</div>
@@ -5686,7 +5691,7 @@
         };
         tl.innerHTML =
           Object.entries(groups)
-            .slice(0, 30)
+            .slice(0, 60)
             .map(
               ([date, items]) => `
            <div class="tl-day-group">
@@ -5702,7 +5707,7 @@
                      <div class="tl-title">${e.message || "—"}</div>
                      ${traceQuery ? `<button class="icon-btn" onclick="jumpToTrace('${traceQuery}')" title="Trace Flow" style="font-size:10px; margin-top:-2px">Trace <i class="fa-solid fa-crosshairs"></i></button>` : ""}
                    </div>
-                   <div class="tl-meta">${e.project} · ${e.branch || ""}${e.author ? " · " + e.author : ""} · ${timeAgo(e.timestamp)}</div>
+                   <div class="tl-meta">${e.project} · ${e.branch || ""}${e.merge_target ? " → " + e.merge_target : ""}${e.author ? " · " + e.author : ""} · ${timeAgo(e.timestamp)}</div>
                    <div class="tl-badges">
                      <span class="type-badge ${typeBadgeClass[e.type] || "tb-commit"}">${e.type || "?"}</span>
                      ${e.mr_state ? `<span class="type-badge ${{ opened: "sb-opened", merged: "sb-merged", closed: "sb-closed", locked: "sb-locked", open: "sb-opened" }[e.mr_state] || "sb-closed"}">${e.mr_state}</span>` : ""}
@@ -5996,6 +6001,20 @@
           .join("");
       }
 
+      function updateAuthorsFilter() {
+        const authors = [
+          ...new Set(state.entries.map((e) => e.author).filter(Boolean)),
+        ].sort();
+        const sel = document.getElementById("f-author");
+        if (!sel) return;
+        const current = sel.value;
+        sel.innerHTML =
+          '<option value="">All developers</option>' +
+          authors
+            .map((a) => `<option value="${a}" ${a === current ? "selected" : ""}>${a}</option>`)
+            .join("");
+      }
+
       // ═══════════════════════════════════════════
       //  DELETE
       // ═══════════════════════════════════════════
@@ -6010,12 +6029,14 @@
         const q = (
           document.getElementById("history-search-q")?.value || ""
         ).toLowerCase();
+        const author = document.getElementById("f-author")?.value || "";
 
         // Filter for commits only
         const commits = state.entries.filter((e) => e.type === "commit");
 
         const filtered = commits
           .filter((e) => {
+            if (author && e.author !== author) return false;
             const hay = [e.project, e.author, e.message, e.commit]
               .join(" ")
               .toLowerCase();
@@ -6036,7 +6057,7 @@
         }
 
         body.innerHTML = filtered
-          .slice(0, 150)
+          .slice(0, 500)
           .map((c) => {
             const d = new Date(c.timestamp);
             const timeStr = d.toLocaleDateString([], {
@@ -6527,6 +6548,8 @@
         let entries = state.entries.filter(
           (e) => e.type === "merge" || e.merge_target,
         );
+        const author = document.getElementById("f-author")?.value || "";
+        if (author) entries = entries.filter((e) => e.author === author);
         if (mtProjectFilter)
           entries = entries.filter((e) => e.project === mtProjectFilter);
         return entries.sort(
@@ -6543,6 +6566,8 @@
             e.type === "pr" ||
             e.type === "mr",
         );
+        const author = document.getElementById("f-author")?.value || "";
+        if (author) entries = entries.filter((e) => e.author === author);
         if (mtProjectFilter)
           entries = entries.filter((e) => e.project === mtProjectFilter);
         return entries.sort(
