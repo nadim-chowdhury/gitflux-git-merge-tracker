@@ -5631,7 +5631,7 @@
               </div>
             `;
 
-            const branchInfo = e.merge_target 
+            const branchInfo = e.merge_target
               ? `<div class="cell-branch" title="${e.branch} → ${e.merge_target}">${e.branch}<span style="color:var(--text3); margin:0 4px">→</span>${e.merge_target}</div>`
               : `<div class="cell-branch" title="${e.branch}">${e.branch || "—"}</div>`;
 
@@ -6011,7 +6011,10 @@
         sel.innerHTML =
           '<option value="">All developers</option>' +
           authors
-            .map((a) => `<option value="${a}" ${a === current ? "selected" : ""}>${a}</option>`)
+            .map(
+              (a) =>
+                `<option value="${a}" ${a === current ? "selected" : ""}>${a}</option>`,
+            )
             .join("");
       }
 
