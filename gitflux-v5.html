@@ -1204,8 +1204,38 @@
         font-size: 11.5px;
         color: var(--text2);
         word-break: break-word;
-        white-space: normal;
-        padding-right: 10px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .cell-msg.expanded {
+        white-space: pre-wrap;
+        overflow: visible;
+        background: var(--surface2);
+        padding: 8px;
+        border-radius: 4px;
+        box-shadow: var(--shadow-md);
+        position: relative;
+        z-index: 50;
+        margin: -4px;
+      }
+
+      .journey-wrap {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+      }
+
+      .journey-arrow {
+        color: var(--text3);
+        font-size: 8px;
+        opacity: 0.5;
       }
 
       .cell-actions {
@@ -2153,27 +2183,6 @@
         gap: 4px;
         flex-wrap: wrap;
         flex-shrink: 0;
-      }
-
-      /* Merge tracker stats mini */
-      .mt-stats {
-        display: flex;
-        gap: 10px;
-        /* margin-bottom: 14px; */
-        flex-wrap: wrap;
-      }
-
-      .mt-stat-item {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 12px;
-        border-radius: var(--r);
-        background: var(--bg2);
-        border: 1px solid var(--border);
-        font-size: 11px;
-        color: var(--text2);
-        font-weight: 500;
       }
 
       .mt-stat-num {
@@ -3837,7 +3846,10 @@
                   oninput="renderCommitHistory()"
                 />
               </div>
-              <div class="toolbar-right" style="color: var(--text2)">
+              <div
+                class="toolbar-right"
+                style="color: var(--text2); font-size: 12px; font-weight: 500"
+              >
                 <span class="badge-count" id="history-count">0</span>
                 Commits
               </div>
@@ -3958,7 +3970,6 @@
                 align-items: center;
               "
             >
-              <div class="mt-stats" id="mt-stats"></div>
               <div
                 style="
                   display: flex;
@@ -5165,7 +5176,14 @@
               const mrs = await glFetch(
                 `/projects/${pid}/merge_requests?per_page=50&order_by=updated_at`,
               );
-              for (const mr of mrs)
+              for (const mr of mrs) {
+                // Fix truncated titles by using description if available
+                let msg = mr.title || "—";
+                if (msg.endsWith("...") && mr.description) {
+                  const firstLine = mr.description.split("\n")[0].trim();
+                  if (firstLine.length > 5) msg = firstLine;
+                }
+
                 addEntry({
                   id: `gl-mr-${mr.id}`,
                   source: "gitlab",
@@ -5173,7 +5191,8 @@
                   project: proj.name,
                   branch: mr.source_branch,
                   merge_target: mr.target_branch,
-                  message: mr.title,
+                  message: msg,
+                  description: mr.description || "",
                   author: mr.author?.username || mr.author?.name || "—",
                   author_name: mr.author?.name || "",
                   author_avatar: mr.author?.avatar_url || "",
@@ -5186,6 +5205,7 @@
                   url: mr.web_url,
                   mr_state: mr.state,
                 });
+              }
             } catch (e) {}
             try {
               const tags = await glFetch(
@@ -5273,7 +5293,12 @@
       //  ENTRIES
       // ═══════════════════════════════════════════
       function addEntry(e) {
-        if (state.entries.find((x) => x.id === e.id)) return;
+        const existing = state.entries.find((x) => x.id === e.id);
+        if (existing) {
+          // Update existing entry with new data if available (e.g. description)
+          Object.assign(existing, e);
+          return;
+        }
 
         // Auto-detect merge commits from message if type is commit
         if (e.type === "commit" && e.message) {
@@ -5701,36 +5726,45 @@
           body.innerHTML = `<div class="empty"><div class="empty-ico"><i class="fa-solid fa-code-branch"></i></div><div class="empty-title">No events match</div><div class="empty-sub">Try adjusting filters.</div></div>`;
           return;
         }
+
+        // Update header columns to match row
+        const head = document.querySelector(".table-head");
+        if (head) {
+          head.style.gridTemplateColumns =
+            "110px 160px 130px 140px 140px 85px 1fr 72px";
+          head.innerHTML = `
+            <div>Time</div>
+            <div>Project</div>
+            <div>Author</div>
+            <div>Source Branch</div>
+            <div>Target Branch</div>
+            <div>Status</div>
+            <div>Message</div>
+            <div style="text-align:right">Actions</div>
+          `;
+        }
+
         body.innerHTML = entries
           .slice(0, 500)
           .map((e) => {
             const d = new Date(e.timestamp);
             const timeStr = `${d.toLocaleDateString([], { month: "short", day: "numeric" })}<br>${d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
-            const tc = typeBadgeClass[e.type] || "tb-commit";
 
             const stateBadge = e.mr_state
-              ? `<span class="type-badge ${stateClassMap[e.mr_state] || "sb-closed"}">${e.mr_state}</span>`
-              : " ";
+              ? `<span class="type-badge ${stateClassMap[e.mr_state] || "sb-closed"}" style="font-size:8px">${e.mr_state}</span>`
+              : `<span class="type-badge ${typeBadgeClass[e.type] || "tb-commit"}" style="font-size:8px">${e.type}</span>`;
 
             const authorContent = `
               <div class="cell-author" title="${e.author_name || e.author}">
                 ${e.author_avatar ? `<img src="${e.author_avatar}" alt="">` : '<div style="width:18px;height:18px;border-radius:50%;background:var(--surface3)"></div>'}
-                <span>${e.author}</span>
+                <span style="font-size:11px">${e.author}</span>
               </div>
             `;
 
-            const branchInfo = e.merge_target
-              ? `<div class="cell-branch" title="${e.branch} → ${e.merge_target}">${e.branch}<span style="color:var(--text3); margin:0 4px">→</span>${e.merge_target}</div>`
-              : `<div class="cell-branch" title="${e.branch}">${e.branch || "—"}</div>`;
+            const fullMsg = e.description
+              ? `${e.message}\n\n${e.description}`
+              : e.message;
 
-            const envStr = [
-              e.environment &&
-                `<span class="env-badge ${envBadgeClass2[e.environment] || "eb-dev"}">${e.environment}</span>`,
-              e.server &&
-                `<span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">${e.server}</span>`,
-            ]
-              .filter(Boolean)
-              .join(" ");
             const link = e.url
               ? `<a href="${e.url}" target="_blank" class="icon-btn" title="Open"><i class="fa-solid fa-up-right-from-square"></i></a>`
               : "";
@@ -5746,7 +5780,11 @@
               <div class="cell-branch" title="${e.branch || ""}">${e.branch || "—"}</div>
               <div class="cell-branch" title="${e.merge_target || ""}">${e.merge_target || "—"}</div>
               <div>${stateBadge}</div>
-              <div class="cell-msg" title="${e.message || ""}">${e.message || "—"}${e.mr_number ? ` <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">${e.mr_number}</span>` : ""}</div>
+              <div class="cell-msg-wrap">
+                <div class="cell-msg" title="${fullMsg.replace(/"/g, "&quot;")}" onclick="this.classList.toggle('expanded')">
+                  ${e.message || "—"}${e.mr_number ? ` <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">${e.mr_number}</span>` : ""}
+                </div>
+              </div>
               <div class="cell-actions">${traceBtn}${link}</div>
             </div>`;
           })
@@ -6057,19 +6095,48 @@
           return;
         }
         sidebar.style.display = "block";
+
+        const prodTgts = ["main", "master", "prod", "production"];
+
         list.innerHTML = [
           `<div class="repo-item ${!state.repoFilter ? "active" : ""}" onclick="filterRepo(null)">
-           <div class="repo-dot"></div><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">All repos</span>
+           <div class="repo-dot"></div><span style="flex:1">All repos</span>
          </div>`,
         ]
           .concat(
-            state.repos.map(
-              (r) =>
-                `<div class="repo-item ${state.repoFilter === r.name ? "active" : ""}" onclick="filterRepo('${r.name}')">
+            state.repos.map((r) => {
+              // Calculate Health/Activity
+              const repoEntries = state.entries.filter(
+                (e) => e.project === r.name,
+              );
+              const openPRs = repoEntries.filter(
+                (e) =>
+                  (e.type === "pr" || e.type === "mr") &&
+                  (e.pr_state === "open" || e.mr_state === "opened"),
+              ).length;
+              const pending = repoEntries.filter(
+                (e) =>
+                  e.type === "merge" &&
+                  e.branch &&
+                  !prodTgts.includes(e.branch.toLowerCase()) &&
+                  e.merge_target &&
+                  !prodTgts.includes(e.merge_target.toLowerCase()),
+              ).length;
+
+              const healthColor =
+                openPRs > 5
+                  ? "var(--red)"
+                  : pending > 3
+                    ? "var(--orange)"
+                    : "var(--green)";
+              const healthIndicator = `<div style="width:4px; height:4px; border-radius:50%; background:${healthColor}" title="${openPRs} open PRs, ${pending} pending promotions"></div>`;
+
+              return `<div class="repo-item ${state.repoFilter === r.name ? "active" : ""}" onclick="filterRepo('${r.name}')">
              <div class="repo-dot ${r.source === "github" ? "gh" : "gl"}"></div>
-             <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.name}</span>
-           </div>`,
-            ),
+             <span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">${r.name}</span>
+             ${healthIndicator}
+           </div>`;
+            }),
           )
           .join("");
       }
@@ -6150,10 +6217,7 @@
           .slice(0, 500)
           .map((c) => {
             const d = new Date(c.timestamp);
-            const timeStr = d.toLocaleDateString([], {
-              month: "short",
-              day: "numeric",
-            });
+            const timeStr = `${d.toLocaleDateString([], { month: "short", day: "numeric" })} ${d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
 
             // Trace the Merge Journey logic
             let journey = [];
@@ -6168,8 +6232,6 @@
               let hasMore = true;
 
               while (hasMore && safety < 4) {
-                // Find the earliest merge after this commit where this branch was the source
-                // and it merges into a higher or equal level environment
                 const merges = state.entries
                   .filter(
                     (e) =>
@@ -6185,8 +6247,6 @@
                 const mergeEvent = merges.find((m) => {
                   const tgtLvl = getEnvLevel(m.merge_target);
                   const curLvl = getEnvLevel(currentBranch);
-                  // Allow forward merges or same-level merges (like different staging envs)
-                  // but prevent obvious sync-backs like main -> dev
                   return tgtLvl >= curLvl || curLvl === 0;
                 });
 
@@ -6211,20 +6271,31 @@
               }
             }
 
+            const authorContent = `
+              <div class="cell-author" title="${c.author_name || c.author}">
+                ${c.author_avatar ? `<img src="${c.author_avatar}" style="width:16px;height:16px;border-radius:50%">` : '<div style="width:16px;height:16px;border-radius:50%;background:var(--surface3)"></div>'}
+                <span style="font-size:11px">${c.author}</span>
+              </div>
+            `;
+
+            const fullMsg = c.description
+              ? `${c.message}\n\n${c.description}`
+              : c.message;
+
             return `
-          <div class="table-row" style="grid-template-columns: 100px 220px 180px 1fr 180px 80px">
-          <div class="cell-time">${timeStr}</div>
-          <div class="cell-project">${c.project}</div>
-          <div class="cell-author">
-          ${c.author_avatar ? `<img src="${c.author_avatar}" style="width:16px;height:16px;border-radius:50%">` : '<div style="width:16px;height:16px;border-radius:50%;background:var(--surface3)"></div>'}
-          <span>${c.author}</span>
-          </div>
-          <div class="cell-msg" title="${c.message}">${c.message}</div>
-          <div class="journey-wrap">${journey.length ? journey.join("") : '<span class="env-badge tb-commit">local</span>'}</div>
-          <div class="cell-actions">
-            <button class="icon-btn" onclick="jumpToTrace('${c.commit || c.branch}')" title="Trace Flow"><i class="fa-solid fa-crosshairs"></i></button>
-            ${c.url ? `<a href="${c.url}" target="_blank" class="icon-btn"><i class="fa-solid fa-up-right-from-square"></i></a>` : ""}
-          </div>
+          <div class="table-row" style="grid-template-columns: 120px 180px 140px 1fr 200px 80px">
+            <div class="cell-time" style="font-size:9px">${timeStr}</div>
+            <div class="cell-project">${c.project}</div>
+            ${authorContent}
+            <div class="cell-msg-wrap">
+              <div class="cell-msg" title="${fullMsg.replace(/"/g, "&quot;")}" onclick="this.classList.toggle('expanded')">${c.message}</div>
+              ${c.commit ? `<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:2px">${c.commit}</div>` : ""}
+            </div>
+            <div class="journey-wrap">${journey.length ? journey.join("") : '<span class="env-badge tb-commit">local</span>'}</div>
+            <div class="cell-actions">
+              <button class="icon-btn" onclick="jumpToTrace('${c.commit || c.branch}')" title="Trace Flow"><i class="fa-solid fa-crosshairs"></i></button>
+              ${c.url ? `<a href="${c.url}" target="_blank" class="icon-btn"><i class="fa-solid fa-up-right-from-square"></i></a>` : ""}
+            </div>
           </div>
           `;
           })
@@ -6669,36 +6740,11 @@
       }
 
       function renderMergeTracker() {
-        renderMTStats();
         renderMTProjectPills();
         renderMergeFlow();
         renderMergeMatrix();
         renderPendingMerges();
         renderBranchLifecycle();
-      }
-
-      function renderMTStats() {
-        const merges = getMergeEntries();
-        const related = getAllMergeRelated();
-        const projects = [
-          ...new Set(related.map((e) => e.project).filter(Boolean)),
-        ];
-        const branches = [
-          ...new Set(related.map((e) => e.branch).filter(Boolean)),
-        ];
-        const targets = [
-          ...new Set(merges.map((e) => e.merge_target).filter(Boolean)),
-        ];
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const todayM = merges.filter(
-          (e) => new Date(e.timestamp) >= today,
-        ).length;
-        document.getElementById("mt-stats").innerHTML = `
-                 <div class="mt-stat-item"><span class="mt-stat-num" style="color:var(--green)">${merges.length}</span> Merges${todayM ? ` <span style="font-size:10px;color:var(--text3)">(${todayM} today)</span>` : ""}</div>
-                 <div class="mt-stat-item"><span class="mt-stat-num" style="color:var(--purple)">${projects.length}</span> Projects</div>
-                 <div class="mt-stat-item"><span class="mt-stat-num" style="color:var(--accent)">${branches.length}</span> Branches</div>
-                 <div class="mt-stat-item"><span class="mt-stat-num" style="color:var(--orange)">${targets.length}</span> Targets</div>`;
       }
 
       function renderMTProjectPills() {
@@ -6762,11 +6808,20 @@
             `
               : "";
 
+            const fullMsg = e.description
+              ? `${e.message}\n\n${e.description}`
+              : e.message;
+
             return `<div class="flow-item">
                    <span class="flow-branch flow-src" title="${src}">${src}</span>
                    <span class="flow-arrow"><i class="fa-solid fa-arrow-right-long"></i></span>
                    <span class="flow-branch ${tgtCls}" title="${tgt}">${tgt}</span>
-                   <span class="flow-meta" style="margin-left:0px">${e.message || "—"}${e.mr_number ? ' <span style="color:var(--text3)">' + e.mr_number + "</span>" : ""}${stateBadge}</span>
+                   <div class="cell-msg-wrap" style="flex:1; margin-left:14px">
+                     <div class="cell-msg" title="${fullMsg.replace(/"/g, "&quot;")}" onclick="this.classList.toggle('expanded')">
+                        ${e.message || "—"}${e.mr_number ? ' <span style="color:var(--text3)">' + e.mr_number + "</span>" : ""}
+                     </div>
+                   </div>
+                   ${stateBadge}
                    ${authorHtml}
                    <span class="flow-project-tag">${e.project || ""}</span>
                    <span class="flow-time">${timeAgo(e.timestamp)}</span>
