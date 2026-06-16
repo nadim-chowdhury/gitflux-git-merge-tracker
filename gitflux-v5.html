@@ -5735,15 +5735,12 @@
         // Update header columns to match row
         const head = document.querySelector(".table-head");
         if (head) {
-          head.style.gridTemplateColumns =
-            "110px 160px 130px 140px 140px 85px 1fr 72px";
+          head.style.gridTemplateColumns = "110px 160px 140px 240px 1fr 80px";
           head.innerHTML = `
             <div>Time</div>
             <div>Project</div>
             <div>Author</div>
-            <div>Source Branch</div>
-            <div>Target Branch</div>
-            <div>Status</div>
+            <div>Activity &amp; Flow</div>
             <div>Message</div>
             <div style="text-align:right">Actions</div>
           `;
@@ -5761,10 +5758,16 @@
 
             const authorContent = `
               <div class="cell-author" title="${e.author_name || e.author}">
-                ${e.author_avatar ? `<img src="${e.author_avatar}" alt="">` : '<div style="width:18px;height:18px;border-radius:50%;background:var(--surface3)"></div>'}
-                <span style="font-size:11px">${e.author}</span>
+                ${e.author_avatar ? `<img src="${e.author_avatar}" alt="">` : '<div style="width:18px;height:18px;border-radius:50%;background:var(--surface3); display:flex; align-items:center; justify-content:center; font-size:8px; color:var(--text3)">?</div>'}
+                <span style="font-size:11px">${e.author || "system"}</span>
               </div>
             `;
+
+            const flowHtml = e.merge_target
+              ? `<div class="cell-branch" style="display:inline-block; margin-left:8px">${e.branch}<span style="color:var(--text3); margin:0 4px">→</span>${e.merge_target}</div>`
+              : e.branch
+                ? `<div class="cell-branch" style="display:inline-block; margin-left:8px">${e.branch}</div>`
+                : "";
 
             const fullMsg = e.description
               ? `${e.message}\n\n${e.description}`
@@ -5778,13 +5781,14 @@
               ? `<button class="icon-btn" onclick="jumpToTrace('${traceQuery}')" title="Trace Flow"><i class="fa-solid fa-crosshairs"></i></button>`
               : "";
 
-            return `<div class="table-row">
+            return `<div class="table-row" style="grid-template-columns: 110px 160px 140px 240px 1fr 80px">
               <div class="cell-time">${timeStr}</div>
               <div class="cell-project">${e.project || "—"}</div>
               ${authorContent}
-              <div class="cell-branch" title="${e.branch || ""}">${e.branch || "—"}</div>
-              <div class="cell-branch" title="${e.merge_target || ""}">${e.merge_target || "—"}</div>
-              <div>${stateBadge}</div>
+              <div style="display:flex; align-items:center; gap:4px">
+                ${stateBadge}
+                ${flowHtml}
+              </div>
               <div class="cell-msg-wrap">
                 <div class="cell-msg" title="${fullMsg.replace(/"/g, "&quot;")}" onclick="this.classList.toggle('expanded')">
                   ${e.message || "—"}${e.mr_number ? ` <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">${e.mr_number}</span>` : ""}
@@ -6294,7 +6298,7 @@
             ${authorContent}
             <div class="cell-msg-wrap">
               <div class="cell-msg" title="${fullMsg.replace(/"/g, "&quot;")}" onclick="this.classList.toggle('expanded')">${c.message}</div>
-              ${c.commit ? `<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:2px">${c.commit}</div>` : ""}
+              ${c.commit ? `<div style="margin-top:4px"><span class="type-badge tb-commit" style="font-family:'DM Mono',monospace; font-size:9px; border-radius:3px">${c.commit}</span></div>` : ""}
             </div>
             <div class="journey-wrap">${journey.length ? journey.join("") : '<span class="env-badge tb-commit">local</span>'}</div>
             <div class="cell-actions">
