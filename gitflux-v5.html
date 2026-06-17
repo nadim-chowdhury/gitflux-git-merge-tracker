@@ -16,10 +16,10 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+    <link rel="manifest" href="site.webmanifest" />
     <style>
       :root {
         --bg: #f5f4f1;
@@ -5746,12 +5746,15 @@
         // Update header columns to match row
         const head = document.querySelector(".table-head");
         if (head) {
-          head.style.gridTemplateColumns = "110px 160px 140px 560px 1fr 80px";
+          head.style.gridTemplateColumns =
+            "110px 140px 180px 220px 150px 120px 1fr 80px";
           head.innerHTML = `
             <div>Time</div>
             <div>Project</div>
             <div>Author</div>
-            <div>Activity &amp; Flow</div>
+            <div>From Branch</div>
+            <div>To Branch</div>
+            <div>State</div>
             <div>Message</div>
             <div style="text-align:right">Actions</div>
           `;
@@ -5764,21 +5767,22 @@
             const timeStr = `${d.toLocaleDateString([], { month: "short", day: "numeric" })}<br>${d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
 
             const stateBadge = e.mr_state
-              ? `<span class="type-badge ${stateClassMap[e.mr_state] || "sb-closed"}" style="font-size:8px; width: 58px;">${e.mr_state}</span>`
-              : `<span class="type-badge ${typeBadgeClass[e.type] || "tb-commit"}" style="font-size:8px; width: 58px;">${e.type}</span>`;
+              ? `<span class="type-badge ${stateClassMap[e.mr_state] || "sb-closed"}" style="font-size:8px;">${e.mr_state}</span>`
+              : `<span class="type-badge ${typeBadgeClass[e.type] || "tb-commit"}" style="font-size:8px;">${e.type}</span>`;
 
             const authorContent = `
-              <div class="cell-author" title="${e.author_name || e.author}">
-                ${e.author_avatar ? `<img src="${e.author_avatar}" alt="">` : '<div style="width:18px;height:18px;border-radius:50%;background:var(--surface3); display:flex; align-items:center; justify-content:center; font-size:8px; color:var(--text3)">?</div>'}
-                <span style="font-size:11px">${e.author || "system"}</span>
+              <div class="cell-author" title="${e.author_name || e.author || ""}">
+                ${e.author_avatar ? `<img src="${e.author_avatar}" alt="">` : e.author ? '<div style="width:18px;height:18px;border-radius:50%;background:var(--surface3); display:flex; align-items:center; justify-content:center; font-size:8px; color:var(--text3)">?</div>' : ""}
+                <span style="font-size:11px">${e.author_name ? e.author_name : ""}</span>
               </div>
             `;
 
-            const flowHtml = e.merge_target
-              ? `<div class="cell-branch" style="display:inline-block; margin-left:8px">${e.branch}<span style="color:var(--text3); margin:0 8px"><br/>->-><br/></span>${e.merge_target}</div>`
-              : e.branch
-                ? `<div class="cell-branch" style="display:inline-block; margin-left:8px">${e.branch}</div>`
-                : "";
+            const fromBranch = e.branch
+              ? `<div class="cell-branch">${e.branch}</div>`
+              : "";
+            const toBranch = e.merge_target
+              ? `<span class="type-badge tb-branch" style="border-radius:4px; font-size:9px; height:18px; text-transform:none; letter-spacing:0; font-family:'DM Mono',monospace">${e.merge_target}</span>`
+              : "";
 
             const fullMsg = e.description
               ? `${e.message}\n\n${e.description}`
@@ -5792,13 +5796,18 @@
               ? `<button class="icon-btn" onclick="jumpToTrace('${traceQuery}')" title="Trace Flow"><i class="fa-solid fa-crosshairs"></i></button>`
               : "";
 
-            return `<div class="table-row" style="grid-template-columns: 110px 160px 140px 560px 1fr 80px">
+            return `<div class="table-row" style="grid-template-columns: 110px 140px 180px 220px 150px 120px 1fr 80px">
               <div class="cell-time">${timeStr}</div>
-              <div class="cell-project">${e.project || "—"}</div>
+              <div class="cell-project">${e.project || ""}</div>
               ${authorContent}
+              <div style="display:flex; align-items:center;">
+                ${fromBranch}
+              </div>
+              <div style="display:flex; align-items:center;">
+                ${toBranch}
+              </div>
               <div style="display:flex; align-items:center; gap:4px">
                 ${stateBadge}
-                ${flowHtml}
               </div>
               <div class="cell-msg-wrap">
                 <div class="cell-msg" title="${fullMsg.replace(/"/g, "&quot;")}" onclick="this.classList.toggle('expanded')">
@@ -6292,7 +6301,7 @@
             }
 
             const authorContent = `
-              <div class="cell-author" title="${c.author_name || c.author}">
+              <div class="cell-author" title="${c.author_name || c.author || ""}">
                 ${c.author_avatar ? `<img src="${c.author_avatar}" style="width:16px;height:16px;border-radius:50%">` : '<div style="width:16px;height:16px;border-radius:50%;background:var(--surface3)"></div>'}
                 <span style="font-size:11px">${c.author}</span>
               </div>
@@ -6821,7 +6830,7 @@
 
             const authorHtml = e.author
               ? `
-              <div class="cell-author" style="gap:4px; margin-right:4px" title="${e.author_name || e.author}">
+              <div class="cell-author" style="gap:4px; margin-right:4px" title="${e.author_name || e.author || ""}">
                 ${e.author_avatar ? `<img src="${e.author_avatar}" style="width:14px; height:14px">` : '<div style="width:14px;height:14px;border-radius:50%;background:var(--surface3)"></div>'}
                 <span style="font-size:10px">${e.author}</span>
               </div>
